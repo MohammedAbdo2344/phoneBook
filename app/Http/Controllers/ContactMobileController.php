@@ -3,51 +3,54 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\contactsMobileRequest;
+use App\Http\Resources\ContactMobileResource;
 use App\Models\ContactMobile;
 use Illuminate\Http\Request;
+use Ramsey\Uuid\Type\Integer;
 use Symfony\Component\HttpFoundation\Response;
 
 class ContactMobileController extends Controller
 {
-    public function index($contact_id)
+    // !get all contacts mobile number
+    public function index($contact)
     {
-        $numbers = ContactMobile::where('contact_id', $contact_id)->get();
+        $numbers = ContactMobileResource::collection(ContactMobile::where('contact_id', $contact)->get());
         if ($numbers->isEmpty()) {
             return response()->json(['message' => 'No numbers found'], Response::HTTP_NOT_FOUND);
         }
-        return response()->json($numbers, Response::HTTP_OK);
+        return $numbers;
     }
-
-    public function show($contact_id, $id)
+    // ! get a contacts mobile number by its id
+    public function show($contact, $mobile)
     {
-        $number = ContactMobile::where('contact_id', $contact_id)->where('id', $id)->get();
+        $number = ContactMobileResource::collection(ContactMobile::where('contact_id', $contact)->where('id', $mobile)->get());
         if ($number->isEmpty()) {
             return response()->json(['message' => 'Number not found'], Response::HTTP_NOT_FOUND);
         }
-        return response()->json($number, Response::HTTP_OK);
+        return $number;
     }
-
-    public function store($contact_id, contactsMobileRequest $request)
+    // ! create new contact mobile number
+    public function store($contact, contactsMobileRequest $request)
     {
         $number = ContactMobile::create([
             'number' => $request->number,
-            'contact_id' => $contact_id
+            'contact_id' => $contact
         ]);
-        return response(["Data created " => $number], Response::HTTP_CREATED);
+        return new ContactMobileResource($number, Response::HTTP_CREATED);
     }
-
-    public function update($contact_id, $id, contactsMobileRequest $request)
+    //   ! update existing contact mobile number
+    public function update($contact, $mobile, contactsMobileRequest $request)
     {
-        ContactMobile::where('id', $id)->update([
+        ContactMobile::where('id', $mobile)->update([
             'number' => $request->number,
-            'contact_id' => $contact_id
+            'contact_id' => $contact
         ]);
         return response(["message " => "Updated Successfull"], Response::HTTP_OK);
     }
-
-    public function destroy($contact_id, $id)
+    //  ! delete an existing contact mobile number
+    public function destroy($contact, $mobile)
     {
-        ContactMobile::where('id', $id)->delete();
+        ContactMobile::where('id', $mobile)->delete();
         return response()->json(['message' => 'Deleted Successfull'], 200);
     }
 }
