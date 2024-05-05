@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\ContactNotFoundException;
+use App\Http\Requests\ContactDestroyRequest;
 use App\Http\Requests\contactsRequest;
+use App\Http\Requests\ContactUpdateRequest;
 use App\Http\Resources\ContactResource;
 use App\Models\Contacts;
 use Exception;
@@ -41,15 +43,15 @@ class ContactController extends Controller
         return new ContactResource($contacts, Response::HTTP_CREATED);
     }
     //   !update existing contact
-    public function update(contactsRequest $request, Contacts $contact)
+    public function update(ContactUpdateRequest $request)
     {
-        $contact->update($request->all());
-        return new ContactResource($contact, Response::HTTP_OK);
+        Contacts::where('id',$request->id)->update(['name'=>$request->name]);
+        return response()->json(['message' => 'Updated Successfull'], 200);
     }
     // !delete a contact
-    public function destroy( $contact)
+    public function destroy(ContactDestroyRequest $request)
     {
-        $contact->delete();
+        Contacts::where('id',$request->id)->delete();
         return response()->json(['message' => 'Deleted Successfull'], 200);
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class contactsMailRequest extends FormRequest
+class ContactDestroyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,16 +22,14 @@ class contactsMailRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'mail' => ['required', 'unique:contact_mails,mail', 'email'],
+            'id'=>['exists:contacts,id'],
         ];
     }
-
-    public  function messages(): array
+    public function  messages(): array
     {
         return [
-            'mail.required' => "The :attribute field is Required",
-            'mail.unique'   => "This email has already been used.",
-            'mail.email'    => "Please enter a valid email address."
+            'id.required'=>"The id field is Required",
+            'id.exists'=>"Cannot Update this contact",
         ];
     }
 }

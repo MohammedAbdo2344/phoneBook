@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ContactMobileDestroyRequest;
+use App\Http\Requests\ContactMobileUpdateRequest;
 use App\Http\Requests\contactsMobileRequest;
 use App\Http\Resources\ContactMobileResource;
 use App\Models\ContactMobile;
@@ -39,18 +41,18 @@ class ContactMobileController extends Controller
         return new ContactMobileResource($number, Response::HTTP_CREATED);
     }
     //   ! update existing contact mobile number
-    public function update($contact, $mobile, contactsMobileRequest $request)
+    public function update($contact, ContactMobileUpdateRequest $request)
     {
-        ContactMobile::where('id', $mobile)->update([
+        ContactMobile::where('id', $request->id)->update([
             'number' => $request->number,
             'contact_id' => $contact
         ]);
         return response(["message " => "Updated Successfull"], Response::HTTP_OK);
     }
     //  ! delete an existing contact mobile number
-    public function destroy($contact, $mobile)
+    public function destroy(ContactMobileDestroyRequest $request)
     {
-        ContactMobile::where('id', $mobile)->delete();
+        ContactMobile::where('id', $request->id)->delete();
         return response()->json(['message' => 'Deleted Successfull'], 200);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ContactMailDestroyRequest;
+use App\Http\Requests\ContactMailUpdateRequest;
 use App\Http\Requests\contactsMailRequest;
 use App\Http\Resources\ContactMailResource;
 use App\Models\ContactMail;
@@ -38,18 +40,18 @@ class ContactMailController extends Controller
         return new ContactMailResource( $mail, Response::HTTP_CREATED);
     }
     // ! update contact mail
-    public function update($contact, $mail, contactsMailRequest $request)
+    public function update($contact, ContactMailUpdateRequest $request)
     {
-        ContactMail::where('id', $mail)->update([
+        ContactMail::where('id', $request->id)->update([
             'mail' => $request->mail,
             'contact_id' => $contact
         ]);
         return response(["message " => "Updated Successfull"], Response::HTTP_OK);
     }
     // ! delete contact mail
-    public function destroy($contact, $mail)
+    public function destroy(ContactMailDestroyRequest $request)
     {
-        ContactMail::where('id', $mail)->delete();
+        ContactMail::where('id', $request->id)->delete();
         return response()->json(['message' => 'Deleted Successfull'], 200);
     }
 }

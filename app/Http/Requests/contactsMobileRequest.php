@@ -29,7 +29,7 @@ class contactsMobileRequest extends FormRequest
     public  function messages(): array
     {
         return [
-            'number.required' => "The Number field is Required",
+            'number.required' => "The :attribute field is Required",
             'number.digits'   => "The Number must be 11 digits.",
             'number.unique'   => "This number has already been recorded."
         ];
