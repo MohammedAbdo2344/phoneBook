@@ -11,9 +11,6 @@ use Tests\TestCase;
 
 class ContactMailTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
     use RefreshDatabase;
     private $contact_mails;
     private $contact;
@@ -43,9 +40,8 @@ class ContactMailTest extends TestCase
     }
     public function test_store_new_contact_mail(): void
     {
-        $contact = Contacts::factory()->make();
+        Contacts::factory()->make();
         $contact_mail = ContactMail::factory()->make();
-        // dd($contact_mobile);
         $this->postJson(
             route(
                 "mails.store",
@@ -60,7 +56,7 @@ class ContactMailTest extends TestCase
     }
     public function test_while_storing_new_contact_mobile_mail_is_required(): void
     {
-        $response = $this->postJson(
+        $this->postJson(
             route(
                 "mails.store",
                 ['contact' => $this->contact->id]
@@ -68,12 +64,10 @@ class ContactMailTest extends TestCase
         )
             ->assertJsonValidationErrors(['mail'])
             ->json();
-        // dd($response);
     }
     public function test_while_storing_new_contact_mobile_mail_is_unique(): void
     {
         $this->contact_mails = ContactMail::factory()->create(['mail' => "mohammed@example.com"]);
-        // dd($this->contact_mobile);
         $response = $this->postJson(
             route(
                 "mails.store",
@@ -85,7 +79,6 @@ class ContactMailTest extends TestCase
         )
             ->assertJsonValidationErrors(['mail'])
             ->json();
-        // dd($response);
     }
     public function test_while_storing_new_contact_mobile_email_is_email(): void
     {
@@ -100,33 +93,35 @@ class ContactMailTest extends TestCase
         )
             ->assertJsonValidationErrors(['mail'])
             ->json();
-        // dd($response);
     }
     public function test_delete_contact_mail()
     {
-        // dd($this->contact);
         $this->deleteJson(
             route(
                 "mails.destroy",
                 [
                     'contact' => $this->contact->id,
-                    'mail' => $this->contact_mails->id
                 ]
-            )
+            ),
+            [
+                'id' => $this->contact_mails->id
+            ]
         );
         $this->assertDatabaseMissing("contact_mails", ["id" => $this->contact_mails->id]);
     }
     public function test_update_contact_mobile()
     {
-        $this->patchJson(
+        $this->putJson(
             route(
                 "mails.update",
                 [
                     'contact' => $this->contact->id,
-                    'mail' => $this->contact_mails->id
                 ]
             ),
-            ['mail' => 'mohammed@ex.com']
+            [
+                'id' => $this->contact_mails->id,
+                'mail' => 'mohammed@ex.com'
+            ]
         )
             ->assertOk();
         $this->assertDatabaseHas('contact_mails', [

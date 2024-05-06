@@ -10,9 +10,6 @@ use Tests\TestCase;
 
 class ContactMobileTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
     use RefreshDatabase;
     private $contact_mobile;
     private $contact;
@@ -42,9 +39,8 @@ class ContactMobileTest extends TestCase
     }
     public function test_store_new_contact_mobile(): void
     {
-        $contact = Contacts::factory()->make();
+        Contacts::factory()->make();
         $contact_mobile = ContactMobile::factory()->make();
-        // dd($contact_mobile);
         $this->postJson(
             route(
                 "mobiles.store",
@@ -59,7 +55,7 @@ class ContactMobileTest extends TestCase
     }
     public function test_while_storing_new_contact_mobile_number_is_required(): void
     {
-        $response = $this->postJson(
+        $this->postJson(
             route(
                 "mobiles.store",
                 ['contact' => $this->contact->id]
@@ -67,11 +63,10 @@ class ContactMobileTest extends TestCase
         )
             ->assertJsonValidationErrors(['number'])
             ->json();
-        // dd($response);
     }
     public function test_while_storing_new_contact_mobile_number_is_digit_11(): void
     {
-        $response = $this->postJson(
+        $this->postJson(
             route(
                 "mobiles.store",
                 ['contact' => $this->contact->id]
@@ -82,12 +77,10 @@ class ContactMobileTest extends TestCase
         )
             ->assertJsonValidationErrors(['number'])
             ->json();
-        // dd($response);
     }
     public function test_while_storing_new_contact_mobile_number_is_unique(): void
     {
         $this->contact_mobile = ContactMobile::factory()->create(['number' => "01017074419"]);
-        // dd($this->contact_mobile);
         $response = $this->postJson(
             route(
                 "mobiles.store",
@@ -97,10 +90,8 @@ class ContactMobileTest extends TestCase
                 'number' => '01017074419'
             ]
         )
-        ->assertJsonValidationErrors(['number'])
-
+            ->assertJsonValidationErrors(['number'])
             ->json();
-        // dd($response);
     }
     public function test_delete_contact_mobile()
     {
@@ -110,25 +101,28 @@ class ContactMobileTest extends TestCase
                 "mobiles.destroy",
                 [
                     'contact' => $this->contact->id,
-                    'mobile' => $this->contact_mobile->id
                 ]
-            )
+            ),
+            [
+                'id' => $this->contact_mobile->id
+            ]
         );
         $this->assertDatabaseMissing("contact_mobiles", ["id" => $this->contact_mobile->id]);
     }
     public function test_update_contact_mobile()
     {
-        $this->patchJson(
+        $this->putJson(
             route(
                 "mobiles.update",
                 [
                     'contact' => $this->contact->id,
-                    'mobile' => $this->contact_mobile->id
                 ]
             ),
-            ['number' => '01017074416']
-        )
-            ->assertOk();
+            [
+                'id' => $this->contact_mobile->id,
+                'number' => '01017074416'
+            ]
+        );
         $this->assertDatabaseHas('contact_mobiles', [
             'id' => $this->contact_mobile->id,
             'number' => '01017074416'
